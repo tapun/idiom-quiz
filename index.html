@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>慣用句クイズ🐾🌿</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #b8e8ff;
+    --grass: #6ed88a;
+    --sun: #ffd93d;
+    --coral: #ff6b6b;
+    --purple: #c77dff;
+    --peach: #ffb347;
+    --white: #fffef5;
+    --dark: #2d2d2d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    background: linear-gradient(160deg, #b8e8ff 0%, #d4f5c4 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(circle at 15% 85%, rgba(110,216,138,0.35) 0%, transparent 45%),
+      radial-gradient(circle at 85% 15%, rgba(255,217,61,0.25) 0%, transparent 45%);
+    pointer-events: none; z-index: 0;
+    animation: bgPulse 10s ease-in-out infinite alternate;
+  }
+  @keyframes bgPulse {
+    from { opacity: 0.7; } to { opacity: 1; }
+  }
+
+  .floaties {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .floaty {
+    position: absolute; font-size: 2.2rem; opacity: 0.12;
+    animation: floatUp 7s ease-in-out infinite;
+  }
+  @keyframes floatUp {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-25px) rotate(12deg); }
+  }
+
+  .container {
+    position: relative; z-index: 1;
+    max-width: 660px; margin: 0 auto;
+    padding: 18px 14px 50px;
+  }
+
+  .title-wrap {
+    text-align: center; margin-bottom: 20px;
+    animation: popIn 0.7s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes popIn {
+    from { transform: scale(0.4) rotate(-8deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+  }
+  .title-icon { font-size: 3.6rem; display: block; }
+  .title-main {
+    font-size: 2rem; font-weight: 900; color: var(--dark);
+    text-shadow: 3px 3px 0 rgba(255,255,255,0.7), 5px 5px 0 rgba(0,0,0,0.08);
+    letter-spacing: 0.06em;
+  }
+  .title-sub { font-size: 0.92rem; color: #555; margin-top: 4px; font-weight: 500; }
+
+  .tabs {
+    display: flex; gap: 8px; margin-bottom: 18px;
+    background: rgba(255,255,255,0.45);
+    padding: 5px; border-radius: 18px;
+    backdrop-filter: blur(8px);
+  }
+  .tab {
+    flex: 1; padding: 11px 6px;
+    border: none; border-radius: 14px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    background: transparent; color: #666;
+  }
+  .tab.active {
+    background: white; color: var(--dark);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.13);
+    transform: scale(1.04);
+  }
+  .tab:hover:not(.active) { background: rgba(255,255,255,0.55); }
+
+  .header-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .score-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: white; padding: 6px 14px; border-radius: 20px;
+    font-size: 0.95rem; font-weight: 700; color: var(--dark);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  }
+  .q-count { font-size: 0.9rem; font-weight: 700; color: #555; }
+
+  .progress-bar {
+    height: 13px; background: rgba(255,255,255,0.5);
+    border-radius: 10px; overflow: hidden; margin-bottom: 14px;
+    backdrop-filter: blur(4px);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--grass), var(--sun));
+    border-radius: 10px; transition: width 0.5s ease;
+  }
+
+  .card {
+    background: white; border-radius: 26px;
+    padding: 26px 22px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.11), 0 2px 6px rgba(0,0,0,0.05);
+    margin-bottom: 14px;
+    animation: slideIn 0.45s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative; overflow: hidden;
+  }
+  @keyframes slideIn {
+    from { transform: translateX(50px) rotate(2deg); opacity: 0; }
+    to   { transform: translateX(0) rotate(0deg);   opacity: 1; }
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+    background: linear-gradient(90deg, var(--coral), var(--purple), var(--sun));
+  }
+  .q-num { font-size: 0.8rem; font-weight: 700; color: #bbb; letter-spacing: 0.1em; margin-bottom: 6px; }
+  .q-icon { font-size: 2.6rem; display: block; margin-bottom: 10px; }
+  .q-text { font-size: 1.3rem; font-weight: 700; color: var(--dark); line-height: 1.65; }
+  .q-hint {
+    font-size: 0.88rem; color: #888; background: #f7f7f7;
+    padding: 8px 13px; border-radius: 11px; margin-top: 11px; line-height: 1.5;
+  }
+
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 16px; }
+  .opt {
+    padding: 15px 10px; border: 3px solid #eee; border-radius: 16px;
+    background: white; font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 0.97rem; font-weight: 700; color: var(--dark);
+    cursor: pointer; transition: all 0.2s ease;
+    text-align: center; line-height: 1.45;
+  }
+  .opt:hover:not(:disabled) {
+    border-color: var(--purple);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 18px rgba(199,125,255,0.28);
+  }
+  .opt:active:not(:disabled) { transform: scale(0.97); }
+  .opt.correct { border-color: var(--grass); background: #eafaf0; color: #1e7a3f; animation: correctPop 0.4s ease; }
+  .opt.wrong   { border-color: var(--coral);  background: #fff0f0; color: #b03030; animation: wrongShake 0.35s ease; }
+  @keyframes correctPop  { 0%{transform:scale(1)} 50%{transform:scale(1.07)} 100%{transform:scale(1)} }
+  @keyframes wrongShake  { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 75%{transform:translateX(7px)} }
+  .opt-label {
+    display: inline-block; width: 26px; height: 26px;
+    background: #f0f0f0; border-radius: 50%;
+    line-height: 26px; font-size: 0.82rem; font-weight: 900;
+    margin-bottom: 5px;
+  }
+
+  .feedback {
+    margin-top: 14px; padding: 14px 18px; border-radius: 16px;
+    font-size: 0.98rem; font-weight: 700; text-align: center; line-height: 1.6;
+    animation: fbPop 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes fbPop { from{transform:scale(0.75);opacity:0} to{transform:scale(1);opacity:1} }
+  .feedback.ok  { background: linear-gradient(135deg,#eafaf0,#d0f5e0); color: #1a6635; border: 2px solid #6ed88a; }
+  .feedback.ng  { background: linear-gradient(135deg,#fff0f0,#ffe0e0); color: #b03030; border: 2px solid #ff6b6b; }
+  .fb-emoji { font-size: 1.9rem; display: block; margin-bottom: 3px; }
+
+  .next-btn {
+    width: 100%; padding: 15px; margin-top: 11px;
+    background: linear-gradient(135deg, var(--coral), var(--purple));
+    color: white; border: none; border-radius: 16px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 1.05rem; font-weight: 700;
+    cursor: pointer; transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 5px 18px rgba(255,107,107,0.38);
+    letter-spacing: 0.04em;
+  }
+  .next-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 9px 26px rgba(255,107,107,0.48); }
+  .next-btn:active { transform: scale(0.97); }
+
+  .result {
+    text-align: center; background: white; border-radius: 26px;
+    padding: 38px 22px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.11);
+    animation: slideIn 0.45s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .result-emoji { font-size: 4.8rem; display: block; animation: spinIn 0.9s ease; }
+  @keyframes spinIn { from{transform:rotate(-200deg)scale(0);opacity:0} to{transform:rotate(0)scale(1);opacity:1} }
+  .result-stars { font-size: 2rem; letter-spacing: 5px; margin: 12px 0; }
+  .result-title { font-size: 1.7rem; font-weight: 900; color: var(--dark); }
+  .result-score {
+    font-size: 3.2rem; font-weight: 900; margin: 14px 0;
+    background: linear-gradient(135deg, var(--coral), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .result-msg { font-size: 1.05rem; color: #666; margin-bottom: 22px; line-height: 1.65; }
+  .result-btns { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .r-btn {
+    padding: 14px 28px; border: none; border-radius: 16px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 1rem; font-weight: 700; color: white;
+    cursor: pointer; transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .r-btn:hover { transform: translateY(-3px) scale(1.04); }
+  .r-btn.green  { background: linear-gradient(135deg,#6ed88a,#4dc87a); box-shadow: 0 5px 16px rgba(110,216,138,0.45); }
+  .r-btn.purple { background: linear-gradient(135deg,var(--purple),var(--coral)); box-shadow: 0 5px 16px rgba(199,125,255,0.4); }
+
+  .review-section { margin-top: 22px; text-align: left; }
+  .review-title { font-size: 1rem; font-weight: 700; color: #888; margin-bottom: 10px; text-align: center; }
+  .review-item {
+    background: #f9f9f9; border-radius: 12px; padding: 10px 14px;
+    margin-bottom: 8px; font-size: 0.9rem; line-height: 1.55;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ri-idiom { font-weight: 700; font-size: 1rem; color: var(--dark); }
+
+  .confetti-piece {
+    position: fixed; border-radius: 2px;
+    animation: cfall 1.6s ease-out forwards;
+    pointer-events: none; z-index: 999;
+  }
+  @keyframes cfall { 0%{transform:translateY(0)rotate(0);opacity:1} 100%{transform:translateY(105vh)rotate(750deg);opacity:0} }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="floaties">
+  <div class="floaty" style="top:4%;left:4%;animation-delay:0s">🐕</div>
+  <div class="floaty" style="top:8%;right:6%;animation-delay:1.2s">🌸</div>
+  <div class="floaty" style="top:42%;left:1%;animation-delay:2.4s">🐱</div>
+  <div class="floaty" style="bottom:18%;right:4%;animation-delay:0.6s">🌿</div>
+  <div class="floaty" style="bottom:6%;left:12%;animation-delay:1.8s">🐒</div>
+  <div class="floaty" style="top:28%;right:2%;animation-delay:3s">🌺</div>
+  <div class="floaty" style="top:65%;left:5%;animation-delay:1.5s">🐸</div>
+  <div class="floaty" style="bottom:30%;right:8%;animation-delay:0.3s">🎋</div>
+</div>
+
+<div class="container">
+  <div class="title-wrap">
+    <span class="title-icon">🐾🌿</span>
+    <div class="title-main">慣用句クイズ</div>
+    <div class="title-sub">どうぶつ・しょくぶつの慣用句にチャレンジ！</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('animal')">🐾 どうぶつ</button>
+    <button class="tab" onclick="switchTab('plant')">🌿 しょくぶつ</button>
+    <button class="tab" onclick="switchTab('mix')">🎲 まぜまぜ</button>
+  </div>
+
+  <div id="quiz-area"></div>
+</div>
+
+<script>
+const ALL = {
+  animal: [
+    { idiom:"犬も歩けば棒に当たる", icon:"🐕",
+      q:"「いぬもあるけばぼうにあたる」の意味は？",
+      hint:"犬が外を歩いたら思わぬことが…",
+      correct:"行動すると思わぬことが起こる",
+      wrongs:["犬は歩くのが得意","棒が好きな犬のたとえ","ぼんやりしていること"] },
+    { idiom:"犬猿の仲", icon:"🐒",
+      q:"「犬猿の仲」とはどんな関係？",
+      hint:"犬と猿はいつもケンカ？",
+      correct:"とても仲が悪い関係",
+      wrongs:["とても仲がよい関係","大の仲よしのこと","動物のグループのこと"] },
+    { idiom:"犬の遠吠え", icon:"🐕",
+      q:"「犬の遠吠え」とはどういう意味？",
+      hint:"離れたところで吠える犬…",
+      correct:"弱い者が陰で威張ること",
+      wrongs:["犬が遠くまで走ること","大きな声で叫ぶこと","よく吠える犬のこと"] },
+    { idiom:"猫の手も借りたい", icon:"🐱",
+      q:"「猫の手も借りたい」とは？",
+      hint:"猫にまで手伝ってほしいとき…",
+      correct:"とてもいそがしくて誰の助けでも欲しい",
+      wrongs:["猫がじゃまをしている","猫が大好きなこと","ゆっくりやること"] },
+    { idiom:"猫をかぶる", icon:"🐱",
+      q:"「猫をかぶる」とはどういう意味？",
+      hint:"本当の性格をかくしている…",
+      correct:"おとなしくみせて本性をかくす",
+      wrongs:["猫が帽子をかぶること","猫のまねをすること","猫が怖いこと"] },
+    { idiom:"鶴の一声", icon:"🦢",
+      q:"「鶴の一声」とはどういう意味？",
+      hint:"えらい人が一言いうと…",
+      correct:"力ある人の一言で物事が決まること",
+      wrongs:["鶴が鳴いていること","きれいな声のこと","ひとりごとのこと"] },
+    { idiom:"馬が合う", icon:"🐴",
+      q:"「馬が合う」とはどういう意味？",
+      hint:"気持ちがぴったり合うこと",
+      correct:"気が合って仲がよいこと",
+      wrongs:["馬に乗れること","馬のように速いこと","うまくできること"] },
+    { idiom:"馬の耳に念仏", icon:"🐴",
+      q:"「馬の耳に念仏」とはどういう意味？",
+      hint:"馬はお経を聞いてもわかる？",
+      correct:"何を言っても全く聞き入れないこと",
+      wrongs:["お寺に馬がいること","おとなしくすること","馬が賢いこと"] },
+    { idiom:"虫の居所が悪い", icon:"🐛",
+      q:"「虫の居所が悪い」とはどういう意味？",
+      hint:"なんだかイライラしている状態",
+      correct:"機嫌が悪くおこりっぽい状態",
+      wrongs:["虫がいなくなった","おなかがすいた","虫がきらいなこと"] },
+    { idiom:"蛙の子は蛙", icon:"🐸",
+      q:"「蛙の子は蛙」とはどういう意味？",
+      hint:"子どもは親に似る？",
+      correct:"子は結局親に似るということ",
+      wrongs:["カエルがたまごをうむこと","子どもはかわいいこと","水の中で育つこと"] },
+    { idiom:"蛙の面に水", icon:"🐸",
+      q:"「蛙の面に水」とはどういう意味？",
+      hint:"カエルに水をかけても平気？",
+      correct:"何をされても全く平気なこと",
+      wrongs:["カエルが水好きなこと","顔を洗うこと","急に雨が降ること"] },
+    { idiom:"雀の涙", icon:"🐦",
+      q:"「雀の涙」とはどういう意味？",
+      hint:"雀の体はとても小さい…",
+      correct:"ごくわずかな量のこと",
+      wrongs:["雀が泣いていること","小さな雀のこと","たくさんあること"] },
+    { idiom:"猿も木から落ちる", icon:"🐒",
+      q:"「猿も木から落ちる」とはどういう意味？",
+      hint:"木登りが得意な猿でも…",
+      correct:"得意なことでもたまに失敗すること",
+      wrongs:["猿は木が好きなこと","猿がジャンプすること","木が高いこと"] },
+    { idiom:"狐につままれる", icon:"🦊",
+      q:"「狐につままれる」とはどういう意味？",
+      hint:"キツネにだまされた感じ…",
+      correct:"何が起きたかわからずぼんやりすること",
+      wrongs:["狐がつかまること","狐がかわいいこと","急いで走ること"] },
+    { idiom:"鬼の目にも涙", icon:"👹",
+      q:"「鬼の目にも涙」とはどういう意味？",
+      hint:"こわい鬼でも泣くことがある？",
+      correct:"冷たい人でも時に涙を流すこと",
+      wrongs:["鬼が怒っていること","鬼がかわいいこと","泣き虫なこと"] },
+    { idiom:"図に乗る", icon:"🙊",
+      q:"「図に乗る」とはどういう意味？",
+      hint:"おだてられてどうなった？",
+      correct:"調子に乗ってつけあがること",
+      wrongs:["地図を読むこと","絵を描くこと","ゆっくりやること"] },
+    { idiom:"尻に敷く", icon:"🐒",
+      q:"「尻に敷く」とはどういう意味？",
+      hint:"相手を自分の下に置く感じ",
+      correct:"相手を自分の言いなりにすること",
+      wrongs:["後ろに座ること","追いかけること","しっぽをふること"] },
+    { idiom:"蟻の這い出る隙もない", icon:"🐜",
+      q:"「蟻の這い出る隙もない」とはどういう意味？",
+      hint:"小さな蟻さえ通れないくらい…",
+      correct:"警備がとても厳重なこと",
+      wrongs:["蟻がたくさんいること","部屋がせまいこと","虫がきらいなこと"] }
+  ],
+  plant: [
+    { idiom:"根も葉もない", icon:"🌱",
+      q:"「根も葉もない」とはどんな意味？",
+      hint:"根っこも葉っぱもない話…",
+      correct:"まったく根拠がなくでたらめなこと",
+      wrongs:["植物が育たないこと","葉っぱが少ないこと","根がふかいこと"] },
+    { idiom:"竹を割ったような", icon:"🎋",
+      q:"「竹を割ったような性格」とはどういう意味？",
+      hint:"竹はまっすぐスパッと割れる",
+      correct:"さっぱりしていて正直な性格",
+      wrongs:["竹のように細いこと","頑固な性格のこと","力が強いこと"] },
+    { idiom:"花が咲く", icon:"🌸",
+      q:"「話に花が咲く」とはどういう意味？",
+      hint:"花が開くように話が…",
+      correct:"話がにぎやかに盛り上がること",
+      wrongs:["お花が開くこと","春になること","きれいになること"] },
+    { idiom:"根掘り葉掘り", icon:"🌿",
+      q:"「根掘り葉掘り聞く」とはどういう意味？",
+      hint:"根っこまで掘り出す勢いで…",
+      correct:"細かいことまで何でも聞き出すこと",
+      wrongs:["畑をたがやすこと","植物を植えること","葉っぱをあつめること"] },
+    { idiom:"木で鼻をくくる", icon:"🌳",
+      q:"「木で鼻をくくる」とはどういう意味？",
+      hint:"木みたいにかたくつめたい態度",
+      correct:"そっけなくてつめたい態度をとること",
+      wrongs:["木のにおいがすること","鼻が痛いこと","木が好きなこと"] },
+    { idiom:"草の根を分けて探す", icon:"🌾",
+      q:"「草の根を分けて探す」とはどういう意味？",
+      hint:"草むらのすみずみまで…",
+      correct:"どこまでもすみずみ探し回ること",
+      wrongs:["草むらに入ること","草をとること","草むらで遊ぶこと"] },
+    { idiom:"花より団子", icon:"🌸",
+      q:"「花より団子」とはどういう意味？",
+      hint:"きれいな花よりおいしい団子？",
+      correct:"風流より実際の利益を好むこと",
+      wrongs:["花がきれいなこと","お花見すること","団子が大好きなこと"] },
+    { idiom:"棚からぼた餅", icon:"🌿",
+      q:"「棚からぼた餅」とはどういう意味？",
+      hint:"何もしていないのに…",
+      correct:"思いがけない幸運が転がり込むこと",
+      wrongs:["棚においておくこと","餅つきをすること","高いところにあること"] },
+    { idiom:"木を見て森を見ず", icon:"🌲",
+      q:"「木を見て森を見ず」とはどういう意味？",
+      hint:"一本の木ばかり気にすると…",
+      correct:"細かいことにとらわれて全体が見えないこと",
+      wrongs:["森の中で迷うこと","木が好きなこと","林の中に入ること"] },
+    { idiom:"枯れ木も山のにぎわい", icon:"🌳",
+      q:"「枯れ木も山のにぎわい」とはどういう意味？",
+      hint:"枯れ木でもあったほうが…",
+      correct:"役に立たなくても数が多いほどにぎやかになること",
+      wrongs:["枯れた木を切ること","山に登ること","木が育つこと"] },
+    { idiom:"藪から棒", icon:"🎋",
+      q:"「藪から棒」とはどういう意味？",
+      hint:"突然ヤブの中から棒が出てくる感じ",
+      correct:"いきなり突然のことが起きること",
+      wrongs:["棒を持って歩くこと","ヤブに入ること","ゆっくりすること"] },
+    { idiom:"柳に風", icon:"🌿",
+      q:"「柳に風」とはどういう意味？",
+      hint:"柳はしなやかに風を受け流す",
+      correct:"うまく受け流してさからわないこと",
+      wrongs:["風が強いこと","柳の木が倒れること","風が気持ちいいこと"] }
+  ]
+};
+
+let currentTab = 'animal';
+let questions = [];
+let currentIdx = 0;
+let score = 0;
+let answered = false;
+let results = [];
+const LABELS = ['ア','イ','ウ','エ'];
+const Q_PER_ROUND = 8;
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((b, i) => {
+    b.classList.toggle('active', ['animal','plant','mix'][i] === tab);
+  });
+  startQuiz();
+}
+
+function startQuiz() {
+  const pool = currentTab === 'mix'
+    ? shuffle([...ALL.animal, ...ALL.plant])
+    : shuffle(ALL[currentTab]);
+  questions = pool.slice(0, Math.min(Q_PER_ROUND, pool.length));
+  currentIdx = 0; score = 0; results = []; answered = false;
+  renderQ();
+}
+
+// 現在の選択肢順を保存
+let currentOpts = [];
+let currentCorrectIdx = 0;
+
+function renderQ() {
+  const area = document.getElementById('quiz-area');
+  if (currentIdx >= questions.length) { renderResult(); return; }
+  answered = false;
+  const q = questions[currentIdx];
+  const total = questions.length;
+  const pct = (currentIdx / total) * 100;
+  currentOpts = shuffle([q.correct, ...q.wrongs]);
+  currentCorrectIdx = currentOpts.indexOf(q.correct);
+
+  area.innerHTML = `
+    <div class="header-bar">
+      <div class="score-pill">⭐ ${score}点</div>
+      <div class="q-count">${currentIdx+1} / ${total}</div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width:${pct}%"></div>
+    </div>
+    <div class="card">
+      <div class="q-num">もんだい ${currentIdx+1}</div>
+      <span class="q-icon">${q.icon}</span>
+      <div class="q-text">${q.q}</div>
+      <div class="q-hint">💡 ヒント：${q.hint}</div>
+      <div class="options">
+        ${currentOpts.map((opt, i) => `
+          <button class="opt" id="opt${i}" onclick="answer(${i})">
+            <div class="opt-label">${LABELS[i]}</div><br>${opt}
+          </button>
+        `).join('')}
+      </div>
+      <div id="feedback" class="hidden"></div>
+    </div>
+    <button class="next-btn hidden" id="next-btn" onclick="nextQ()">
+      ${currentIdx+1 < total ? 'つぎのもんだいへ →' : '🏆 けっかをみる！'}
+    </button>
+  `;
+}
+
+function answer(sel) {
+  if (answered) return;
+  answered = true;
+  const correct = currentCorrectIdx;
+  const idiom = questions[currentIdx].idiom;
+  const isOk = sel === correct;
+  if (isOk) score += 10;
+  results.push({ idiom, ok: isOk });
+
+  document.querySelectorAll('.opt').forEach((b, i) => {
+    b.disabled = true;
+    if (i === correct) b.classList.add('correct');
+    if (i === sel && !isOk) b.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.className = `feedback ${isOk ? 'ok' : 'ng'}`;
+  fb.innerHTML = isOk
+    ? `<span class="fb-emoji">🎉</span>せいかい！すごい！`
+    : `<span class="fb-emoji">😢</span>ざんねん！こたえは「${LABELS[correct]}」だよ`;
+  if (isOk) confetti();
+  document.getElementById('next-btn').classList.remove('hidden');
+}
+
+function nextQ() { currentIdx++; renderQ(); }
+
+function renderResult() {
+  const area = document.getElementById('quiz-area');
+  const total = questions.length;
+  const maxScore = total * 10;
+  const pct = score / maxScore;
+  let emoji, msg, stars;
+  if (pct >= 0.9)      { emoji='🏆'; msg='まんてんに近い！慣用句マスターだ！🎊'; stars='⭐⭐⭐'; }
+  else if (pct >= 0.7) { emoji='🎊'; msg='よくできました！たくさん知っているね！'; stars='⭐⭐'; }
+  else if (pct >= 0.5) { emoji='😊'; msg='なかなかよかった！もう一回チャレンジしよう！'; stars='⭐'; }
+  else                 { emoji='💪'; msg='もう少し！いっしょにがんばろう！'; stars='✨'; }
+
+  const reviewHTML = results.map(r =>
+    `<div class="review-item">
+      <span style="font-size:1.2rem">${r.ok ? '✅' : '❌'}</span>
+      <span class="ri-idiom">${r.idiom}</span>
+    </div>`
+  ).join('');
+
+  area.innerHTML = `
+    <div class="result">
+      <span class="result-emoji">${emoji}</span>
+      <div class="result-stars">${stars}</div>
+      <div class="result-title">けっか発表！</div>
+      <div class="result-score">${score}点 / ${maxScore}点</div>
+      <div class="result-msg">${msg}</div>
+      <div class="result-btns">
+        <button class="r-btn green" onclick="startQuiz()">🔄 もういちどやる</button>
+        <button class="r-btn purple" onclick="switchTab('mix')">🎲 まぜまぜに挑戦</button>
+      </div>
+      <div class="review-section">
+        <div class="review-title">📝 このラウンドの慣用句</div>
+        ${reviewHTML}
+      </div>
+    </div>
+  `;
+  if (pct >= 0.7) confetti(60);
+}
+
+function confetti(n = 28) {
+  const colors = ['#ff6b6b','#ffd93d','#6ed88a','#a8e6ff','#c77dff','#ffb347'];
+  for (let i = 0; i < n; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.cssText = `
+        left:${Math.random()*100}vw; top:-12px;
+        width:${7+Math.random()*9}px; height:${7+Math.random()*9}px;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        border-radius:${Math.random()>.5?'50%':'3px'};
+        animation-duration:${1.2+Math.random()*1.4}s;
+        animation-delay:${Math.random()*0.25}s;
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2800);
+    }, i * 28);
+  }
+}
+
+startQuiz();
+</script>
+</body>
+</html>
